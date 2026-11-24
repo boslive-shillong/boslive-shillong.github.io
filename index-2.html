@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bos Live: Meghalaya Ka Bos Jong Ngi Tracking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: friendly, civic, practical — a shipped transit app beside a calm control room
+   IDEA: the green-and-yellow city bus itself; the route as one long line you ride down
+   PICTURE: a phone with the live route line, buses sliding along it in real time
+   COLOUR and TYPE: Ka Bos green dominant, forest support, sunflower yellow accent; Plus Jakarta Sans
+   LAYOUT: phone left, control room right; stacks to phone then control room under 900px */
+:root{color-scheme:light dark;
+--bg:light-dark(#eef4ee,#0b1610);--card:light-dark(#ffffff,#13231a);--ink:light-dark(#10241a,#e6f1e9);
+--mute:light-dark(#5b6f63,#9db3a5);--line:light-dark(#d9e6dc,#25392d);
+--g:#1f8a3e;--gd:light-dark(#0f4a26,#0a2d18);--y:#f5cf2e;--r:#d9472b;--soft:light-dark(#e3f2e6,#183324)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Plus Jakarta Sans",system-ui,sans-serif;overflow-x:clip}
+header{background:var(--gd);color:#fff;padding:22px max(5vw,16px) 26px}
+header h1{margin:0;font-size:clamp(26px,3.4vw,40px);line-height:1.08;font-weight:800;text-wrap:balance}
+header p{margin:8px 0 0;color:#cfe6d6;max-width:70ch}
+.how{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px;max-width:1240px}
+@media(max-width:900px){.how{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.how{grid-template-columns:minmax(0,1fr)}}
+.how div{background:#ffffff14;border:1px solid #ffffff26;border-radius:14px;padding:12px 14px}
+.how b{display:block;color:var(--y);font-size:16px}.how span{font-size:14px;color:#e1f0e5}
+.q{font-size:18px;font-weight:800;margin:0 0 2px;line-height:1.2}.qs{font-size:13px;color:var(--mute);margin:0 0 12px}
+.legend{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mute);margin:4px 0 6px}
+.legend b{white-space:nowrap;flex:none;background:var(--y);color:#1d2a10;border:2px solid #0f4a26;border-radius:7px;font-size:11px;padding:1px 5px}
+.dt{font-size:12px;color:#d8f0de;width:100%}
+.tag{display:inline-block;background:var(--y);color:#1d2a10;font-weight:700;font-size:13px;border-radius:99px;padding:3px 10px;margin-bottom:10px}
+main{display:grid;grid-template-columns:minmax(0,410px) minmax(0,1fr);gap:28px;padding:24px max(5vw,16px) 40px;max-width:1300px;margin:0 auto;align-items:start}
+@media(max-width:900px){main{grid-template-columns:minmax(0,1fr)}.phone{margin:0 auto}}
+.phone{width:100%;max-width:410px;background:var(--card);border-radius:34px;border:8px solid #0f1e15;box-shadow:0 24px 50px -20px #0a2d1866;overflow:hidden;display:flex;flex-direction:column;height:min(820px,92vh)}
+.ph-top{background:var(--g);color:#fff;padding:14px 16px 12px}
+.ph-top b{font-size:20px}.ph-top small{display:block;color:#d8f0de;font-size:13px}
+.clock{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.clock .t{font-weight:800;font-size:17px;background:#0004;border-radius:8px;padding:2px 8px;white-space:nowrap}
+.clock button{background:#ffffff22;color:#fff;border:0;border-radius:8px;padding:6px 9px;font:600 13px inherit;cursor:pointer;min-height:32px}
+.clock button.on{background:var(--y);color:#1d2a10}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--card)}
+.tabs button{flex:1;border:0;background:none;color:var(--mute);font:600 14px inherit;padding:12px 4px;cursor:pointer;border-bottom:3px solid transparent;min-height:44px}
+.tabs button.on{color:var(--g);border-color:var(--g)}
+.view{flex:1;overflow:auto;padding:14px}
+.view[hidden]{display:none}
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:4px;gap:4px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;border-radius:9px;padding:9px 6px;font:600 13px inherit;color:var(--ink);cursor:pointer;min-height:40px}
+.seg button.on{background:var(--card);box-shadow:0 1px 4px #0002;color:var(--g)}
+.next{background:var(--gd);color:#fff;border-radius:16px;padding:14px;margin-bottom:12px}
+.next h3{margin:0;font-size:15px;color:#cfe6d6;font-weight:600}
+.next .big{font-size:34px;font-weight:800;line-height:1.1;margin:4px 0}
+.next .row{display:flex;justify-content:space-between;gap:8px;font-size:14px;padding:6px 0;border-top:1px solid #ffffff22}
+.next .row span:last-child{white-space:nowrap}
+.pill{display:inline-block;border-radius:99px;padding:1px 8px;font-size:12px;font-weight:700;white-space:nowrap}
+.late{background:#ffd9cf;color:#8a2410}.ok{background:#d4f2dc;color:#145a2b}.early{background:#fff1b8;color:#6b5300}
+.route{position:relative;margin-left:4px}
+.stop{display:flex;align-items:center;height:46px;cursor:pointer;position:relative;padding-left:44px;border-radius:10px}
+.stop:hover,.stop:focus-visible{background:var(--soft);outline:none}
+.stop.sel{background:var(--soft)}
+.stop::before{content:"";position:absolute;left:19px;top:0;bottom:0;width:6px;background:var(--g)}
+.stop:first-child::before{top:50%}.stop:last-child::before{bottom:50%}
+.stop i{position:absolute;left:14px;top:50%;width:16px;height:16px;margin-top:-8px;border-radius:50%;background:var(--card);border:4px solid var(--g)}
+.stop.sel i{background:var(--y)}
+.stop .n{font-size:14px;font-weight:600;line-height:1.2}.stop .k{margin-left:auto;font-size:12px;color:var(--mute);padding-right:6px;white-space:nowrap}
+.bus{position:absolute;right:52px;height:26px;display:flex;align-items:center;gap:6px;pointer-events:none;transition:top .9s linear;z-index:2}
+.bus b{box-shadow:0 2px 6px #0003;background:var(--y);color:#1d2a10;border:2px solid #0f4a26;border-radius:7px;font-size:11px;font-weight:800;padding:2px 5px;white-space:nowrap}
+.bus em{font-style:normal;font-size:11px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:1px 5px;white-space:nowrap}
+label{display:block;font-size:13px;font-weight:600;color:var(--mute);margin:10px 0 4px}
+select,textarea,input{width:100%;font:16px inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px}
+select:focus,textarea:focus,button:focus-visible{outline:3px solid var(--y);outline-offset:1px}
+.swap{border:0;background:var(--soft);color:var(--g);font:700 14px inherit;border-radius:10px;padding:8px 12px;margin-top:8px;cursor:pointer;min-height:40px}
+.fare{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;align-items:center;background:var(--soft);border-radius:16px;padding:16px;margin-top:14px}
+.fare .amt{font-size:52px;font-weight:800;color:var(--g);line-height:1;grid-row:span 3}
+.fare div{font-size:14px}
+.note{font-size:13px;color:var(--mute);margin:8px 0 0}
+.warn{background:#fff1b8;color:#4d3c00;border-radius:10px;padding:8px 10px;font-size:13px;margin-top:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:8px 12px;font:600 13px inherit;cursor:pointer;min-height:38px}
+.chips button.on{background:var(--g);color:#fff;border-color:var(--g)}
+.primary{width:100%;border:0;background:var(--g);color:#fff;font:700 16px inherit;border-radius:12px;padding:13px;margin-top:14px;cursor:pointer;min-height:48px}
+.ok-msg{background:#d4f2dc;color:#145a2b;border-radius:10px;padding:10px;font-size:14px;margin-top:10px}
+.ops h2{font-size:clamp(24px,2.6vw,32px);line-height:1.1;margin:0 0 4px;text-wrap:balance}
+.ops>p{color:var(--mute);margin:0 0 16px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media(max-width:600px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--card);border-radius:14px;padding:12px 14px;border:1px solid var(--line)}
+.kpi b{display:block;font-size:clamp(24px,3vw,32px);line-height:1.1}.kpi span{font-size:13px;color:var(--mute)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px}
+.panel h3{margin:0 0 10px;font-size:17px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media(max-width:1100px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.bar{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr) 3em;gap:8px;align-items:center;font-size:13px;margin:5px 0}
+.bar .tr{height:12px;background:var(--soft);border-radius:6px;overflow:hidden}.bar .tr i{display:block;height:100%;background:var(--g);border-radius:6px}
+.bar span:last-child{text-align:right;font-weight:700}
+.bar span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}th{font-size:12px;color:var(--mute);font-weight:600}
+td.r,th.r{text-align:right;white-space:nowrap}td:first-child{white-space:nowrap}
+.inc{padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}.inc:last-child{border:0}
+.inc b{display:block}.inc small{color:var(--mute)}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
+.flow span{background:var(--soft);border-radius:10px;padding:8px 10px;font-weight:600}
+.flow i{font-style:normal;color:var(--g);font-weight:800}
+footer{padding:0 max(5vw,16px) 36px;max-width:1300px;margin:0 auto;font-size:13px;color:var(--mute)}
+.scroll{overflow-x:auto}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:8px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:2px 0;padding-inline-start:7em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:6.5em;margin-inline-start:-7em;color:var(--mute)}}
+@media(prefers-reduced-motion:reduce){.bus{transition:none}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<header>
+<span class="tag">Unofficial prototype · for pitching</span>
+<h1>Bos Live: know exactly when your bus will come</h1>
+<p>Today, Ka Bos Jong Ngi passengers know the stops but not where the bus is, so they wait at the stop and guess. Bos Live shows each bus moving along the route, counts down the minutes until it reaches your stop, and tells you your fare.</p>
+<div class="how">
+ <div><b>See the buses move</b><span>In the <u>Live</u> tab, each yellow tag is a bus, moving along the route right now.</span></div>
+ <div><b>Pick your stop</b><span>Choose it at the top of the app. It counts down to the next bus and says if it's running late.</span></div>
+ <div><b>Check your fare</b><span>In <u>Trip &amp; fare</u>, choose where you get on and off to see the price and arrival time.</span></div>
+ <div><b>Report a problem</b><span>Late bus, skipped stop, blocked bus bay: one tap sends it to the department (right side).</span></div>
+</div>
+</header>
+<main>
+<section class="phone" aria-label="Passenger app">
+ <div class="ph-top"><b>Bos Live</b><small>IIM Shillong ⇄ Upper Shillong</small>
+  <div class="clock"><span class="dt">Demo clock (buses are simulated). Speed up time to watch them move:</span><span class="t" id="clk">8:40 AM</span>
+   <button data-s="1">Normal</button><button data-s="10" class="on">Fast</button><button data-s="60">Very fast</button><button id="peak">Rush hour</button></div>
+ </div>
+ <nav class="tabs"><button data-t="live" class="on">Live</button><button data-t="plan">Trip & fare</button><button data-t="rep">Report</button></nav>
+ <div class="view" id="v-live">
+  <p class="q">When will my bus come?</p><p class="qs">Choose where you're going and your stop.</p>
+  <div class="seg" id="dirseg"><button data-d="0" class="on">Going to Upper Shillong</button><button data-d="1">Going to IIM Shillong</button></div>
+  <label for="mystop" style="margin-top:0">Your stop</label><select id="mystop"></select>
+  <div class="next" id="nextcard" style="margin-top:12px"></div>
+  <p class="q" style="font-size:16px">Where are the buses now?</p>
+  <div class="legend"><b>KBJ-01</b> = a bus, moving live along the route. Tap a stop to make it your stop.</div>
+  <div class="route" id="route"></div>
+ </div>
+ <div class="view" id="v-plan" hidden>
+  <p class="q">How much will it cost, and when will I arrive?</p><p class="qs">Choose where you get on and where you get off.</p>
+  <label for="from">I get on at</label><select id="from"></select>
+  <label for="to">I get off at</label><select id="to"></select>
+  <button class="swap" id="swap">⇅ Swap</button>
+  <div id="planout"></div>
+ </div>
+ <div class="view" id="v-rep" hidden>
+  <p class="q">Something wrong? Tell the department.</p><p class="qs">Your report goes straight to the control room, on the right.</p>
+  <label style="margin-top:0">What happened?</label>
+  <div class="chips" id="itype"></div>
+  <label for="rstop">Where</label><select id="rstop"></select>
+  <label for="rbus">Which bus (optional)</label><select id="rbus"></select>
+  <label for="rnote">Details (optional)</label><textarea id="rnote" rows="3" placeholder="e.g. Taxis blocking the bus bay at the main gate"></textarea>
+  <button class="primary" id="rsend">Send report</button>
+  <div id="rmsg"></div>
+  <p class="note">In this prototype, reports appear in the control room on this page only.</p>
+ </div>
+</section>
+
+<section class="ops" aria-label="Control room">
+ <h2>What the transport department sees</h2>
+ <p>Every passenger using the app also sends the department useful information: which buses are late, which stops need more buses, and what goes wrong on the street. This screen updates live as you use the app.</p>
+ <div class="kpis" id="kpis"></div>
+ <div class="grid2">
+  <div class="panel"><h3>Buses on the road now</h3><div class="scroll"><table class="stack"><thead><tr><th>Bus</th><th>Heading to</th><th>Next stop</th><th class="r">Status</th></tr></thead><tbody id="fleet"></tbody></table></div></div>
+  <div class="panel"><h3>Passenger demand by stop today</h3><div id="demand"></div><p class="note">From searches, saved stops and trip plans in the app. Evidence for where new routes and stops are needed.</p></div>
+ </div>
+ <div class="grid2">
+  <div class="panel"><h3>Reports from passengers</h3><div id="incs"></div></div>
+  <div class="panel"><h3>How it connects</h3>
+   <div class="flow"><span>GPS trackers already on the buses</span><i>→</i><span>Live location feed (API)</span><i>→</i><span>Arrival-time model, learned per road segment and time of day</span><i>→</i><span>App · SMS · WhatsApp · stop displays</span></div>
+   <p class="note">The one thing needed from government to go live: access to the existing bus GPS feed and the route timetable.</p>
+  </div>
+ </div>
+</section>
+</main>
+<footer>Stops and fare slabs (0–3 km ₹10, 3–8 km ₹20, 8–13 km ₹30, 13+ km ₹40) are from the official Ka Bos Jong Ngi route poster. Distances between stops, the timetable, bus positions, crowding, demand figures and the first three reports are made-up sample data for this demo. Not affiliated with the Government of Meghalaya.</footer>
+
+<script>
+{
+const RAW=[["IIM Shillong Gate 02",0],["IIM Shillong",0.4],["Umsawli",1],["NIFT Shillong/Tech Park",1.8],["IAS Colony A Main Gate",2.6],["IAS Colony Gate B",3],["Assembly Mawdiangdiang",3.8],["Meghalaya Admin. Training Inst.",4.5],["NEIGRIHMS",5.6],["Lad Mawtneng",6.4],["Ishyrwat",7],["Wahheh",7.6],["Umkadait Block 4",8.1],["Umkadait Block 3",8.5],["Umkadait Block 2",8.9],["Demseiñ-Ïong",9.6],["Urkaliar",10.3],["BK Bajoria",11],["Stadium Interchange",11.6],["Shillong Municipal Board Office",12.2],["State Convention Center",12.6],["Wards Lake",13],["Rajbhavan",13.4,"a"],["High Court",13.6,"b"],["BSNL Office",13.8,"a"],["IGP",14.2],["Barik Point",14.6],["Lady Hydari Park",15,"a"],["Civil Hospital",15.4],["Rhino Auditorium",15.9],["Anjali Junction",16.3],["Military Hospital",16.8],["Rhino Heritage Museum",17.2],["Lad Lummawbah",17.7],["101 Area",18.2],["Gorkha School",18.7],["Laimer",19.3],["Laimer 1/2",19.8],["3½ Mile Upper Shillong",20.4],["Sawmer Football Ground",21],["Sawmer 1/2",21.5],["Sanmer",22.1],["5th Mile Tea Garden",22.8],["5th Mile Upper Shillong",23.4],["ICDP Upper Shillong",24],["Airforce Museum",24.6]];
+const L=24.6,ROW=46;
+const DIRS=[RAW.filter(s=>s[2]!=="b"),RAW.filter(s=>s[2]!=="a").slice().reverse()];
+const KM=Object.fromEntries(RAW.map(s=>[s[0],s[1]]));
+const pos=(d,km)=>d?L-km:km;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+const fmt=m=>{m=((m%1440)+1440)%1440;let h=Math.floor(m/60),mm=Math.floor(m%60);const ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+String(mm).padStart(2,"0")+" "+ap};
+const fare=k=>k<=3?10:k<=8?20:k<=13?30:40;
+const hash=(a,b)=>(Math.imul(a+1,2654435761)^Math.imul(b+7,40503))>>>0;
+const peak=m=>(m>=480&&m<600)||(m>=960&&m<1110);
+const TRIPS=[];
+for(let d=0;d<2;d++){let i=0;for(let dep=390;dep<=1170;dep+=20,i++){const h=hash(i,d),pf=peak(dep)?1.2:1,sched=Math.round(72*pf),f=0.93+(h%15)/100;TRIPS.push({d,dep,sched,dur:sched*f,id:"KBJ-"+String(1+((i*2+d)%15)).padStart(2,"0"),h})}}
+const CROWD=["Seats free","Some standing","Crowded"];
+const crowd=(tr,t)=>CROWD[Math.min(2,(tr.h%3)+(peak(t)?1:0))];
+let t=520,speed=10,dir=0,sel={0:"NEIGRIHMS",1:"Civil Hospital"},tab="live",itype=null;
+const demand={};RAW.forEach((s,i)=>demand[s[0]]=8+hash(i,3)%40);
+Object.assign(demand,{"Civil Hospital":142,"NEIGRIHMS":131,"Stadium Interchange":96,"Laimer":74,"IIM Shillong":69,"Wards Lake":61,"Assembly Mawdiangdiang":55});
+let searches=Object.values(demand).reduce((a,b)=>a+b,0);
+const incs=[{time:492,type:"Blocked from boarding",stop:"NEIGRIHMS",bus:"KBJ-04",note:"Taxis parked in the bus bay at the main entrance",sample:1},{time:475,type:"Bus late / didn't come",stop:"Laimer",bus:"",note:"",sample:1},{time:451,type:"Bus condition",stop:"Civil Hospital",bus:"KBJ-07",note:"AC not working",sample:1}];
+const $=id=>document.getElementById(id);
+const busKm=(tr,t)=>(t-tr.dep)/tr.dur*L;
+const active=t=>TRIPS.filter(tr=>t>=tr.dep&&t<tr.dep+tr.dur);
+const delayAt=(tr,frac)=>(tr.dur-tr.sched)*frac;
+const status=m=>{const r=Math.round(m);return r>2?`<span class="pill late">${r} min late</span>`:r<-2?`<span class="pill early">${-r} min early</span>`:`<span class="pill ok">On time</span>`};
+const arrivals=(d,stop,t,n)=>{const p=pos(d,KM[stop])/L;return TRIPS.filter(tr=>tr.d===d).map(tr=>({tr,at:tr.dep+tr.dur*p,dl:delayAt(tr,p)})).filter(a=>a.at>=t).sort((a,b)=>a.at-b.at).slice(0,n)};
+const inMin=m=>m<1?"Arriving":Math.round(m)+" min";
+
+function drawRoute(){const S=DIRS[dir];$("route").innerHTML=S.map((s,i)=>`<div class="stop${s[0]===sel[dir]?" sel":""}" tabindex="0" role="button" data-s="${i}"><i></i><span class="n">${esc(s[0])}</span><span class="k">${pos(dir,s[1]).toFixed(1)} km</span></div>`).join("")+'<div id="buses"></div>'}
+function drawBuses(){const S=DIRS[dir],P=S.map(s=>pos(dir,s[1]));let h="";
+ for(const tr of active(t).filter(x=>x.d===dir)){const k=busKm(tr,t);let i=0;while(i<P.length-2&&P[i+1]<=k)i++;const f=Math.min(1,(k-P[i])/(P[i+1]-P[i]));
+  h+=`<div class="bus" style="top:${((i+f)*ROW+ROW/2-13).toFixed(1)}px"><b>${tr.id}</b><em>${crowd(tr,t)}</em></div>`}
+ const b=$("buses");if(b)b.innerHTML=h}
+function drawNext(){const st=sel[dir],a=arrivals(dir,st,t,3);
+ const dest=dir?"IIM Shillong":"Upper Shillong";
+ $("nextcard").innerHTML=a.length?`<h3>Next bus to ${dest} reaches ${esc(st)} in</h3><div class="big">${inMin(a[0].at-t)}</div><div class="row"><span>Bus ${a[0].tr.id} · at ${fmt(a[0].at)} · ${crowd(a[0].tr,a[0].at)}</span><span>${status(a[0].dl)}</span></div>`+(a.length>1?`<h3 style="margin-top:8px">After that</h3>`:"")+a.slice(1).map(x=>`<div class="row"><span>Bus ${x.tr.id} · ${fmt(x.at)} (${inMin(x.at-t)})</span><span>${status(x.dl)}</span></div>`).join(""):`<h3>${esc(st)}</h3><div class="big">No more buses today</div>`;
+ const ms=$("mystop");if(ms.dataset.d!==String(dir)){ms.innerHTML=DIRS[dir].map(s=>`<option>${esc(s[0])}</option>`).join("");ms.dataset.d=dir}ms.value=st}
+
+const ALL=RAW.map(s=>s[0]);
+$("from").innerHTML=$("to").innerHTML=$("rstop").innerHTML=ALL.map(n=>`<option>${esc(n)}</option>`).join("");
+$("from").value="NEIGRIHMS";$("to").value="Civil Hospital";$("rstop").value="NEIGRIHMS";
+function nearest(d,km){return DIRS[d].reduce((b,s)=>Math.abs(s[1]-km)<Math.abs(b[1]-km)?s:b)[0]}
+function drawPlan(){const f=$("from").value,to=$("to").value;let o="";
+ if(f===to){$("planout").innerHTML='<p class="note">Choose two different stops.</p>';return}
+ const d=KM[to]>KM[f]?0:1;let F=f,T=to,w="";
+ const has=n=>DIRS[d].some(s=>s[0]===n);
+ if(!has(F)){F=nearest(d,KM[f]);w+=`Buses towards ${d?"IIM Shillong":"Upper Shillong"} don't stop at ${esc(f)}; board at ${esc(F)}. `}
+ if(!has(T)){T=nearest(d,KM[to]);w+=`Buses in this direction don't stop at ${esc(to)}; get off at ${esc(T)}.`}
+ const km=Math.abs(KM[T]-KM[F]),a=arrivals(d,F,t,1)[0];
+ o+=`<div class="fare"><span class="amt"><small style="display:block;font-size:13px;color:var(--mute);font-weight:600">Your fare</small>₹${fare(km)}</span><div><b>${km.toFixed(1)} km</b> · bus going ${d?"towards IIM Shillong":"towards Upper Shillong"}</div>`;
+ if(a){const arr=a.tr.dep+a.tr.dur*pos(d,KM[T])/L;o+=`<div>Next bus comes at <b>${fmt(a.at)}</b> (${inMin(a.at-t).toLowerCase()==="arriving"?"arriving now":"in "+inMin(a.at-t)})</div><div>You reach ${esc(T)} at about <b>${fmt(arr)}</b> (${Math.round(arr-a.at)} min ride)</div>`}else o+=`<div>No more buses today</div><div></div>`;
+ o+="</div>"+(w?`<div class="warn">${w}</div>`:"")+`<p class="note">Fare slabs: 0–3 km ₹10 · 3–8 km ₹20 · 8–13 km ₹30 · 13+ km ₹40</p>`;
+ $("planout").innerHTML=o}
+function bump(n,v){demand[n]=(demand[n]||0)+v;searches+=v}
+
+const TYPES=["Bus late / didn't come","Bus skipped my stop","Blocked from boarding","Overcrowded","Bus condition","Staff behaviour","Other"];
+$("itype").innerHTML=TYPES.map((x,i)=>`<button data-i="${i}">${x}</button>`).join("");
+function drawRbus(){const v=$("rbus").value;$("rbus").innerHTML='<option value="">Not sure</option>'+active(t).map(tr=>`<option>${tr.id}</option>`).join("");$("rbus").value=v}
+
+function drawOps(){const A=active(t);const dl=A.map(tr=>delayAt(tr,(t-tr.dep)/tr.dur));const ontime=dl.length?Math.round(100*dl.filter(x=>Math.abs(x)<=2).length/dl.length):100;
+ const done=TRIPS.filter(tr=>tr.dep+tr.dur<=t).length;
+ $("kpis").innerHTML=[[A.length,"buses on the road"],[ontime+"%","running on time (±2 min)"],[done,"trips completed today"],[searches.toLocaleString("en-IN"),"passenger look-ups today"]].map(k=>`<div class="kpi"><b>${k[0]}</b><span>${k[1]}</span></div>`).join("");
+ $("fleet").innerHTML=A.length?A.sort((a,b)=>a.d-b.d||a.dep-b.dep).map((tr,i)=>{const k=busKm(tr,t),nx=DIRS[tr.d].find(s=>pos(tr.d,s[1])>k);return `<tr><td><b>${tr.id}</b></td><td>${tr.d?"IIM Shillong":"Upper Shillong"}</td><td>${nx?esc(nx[0]):"Terminus"}</td><td class="r">${status(delayAt(tr,(t-tr.dep)/tr.dur))}</td></tr>`}).join(""):'<tr><td colspan="4">No buses running at this hour.</td></tr>';
+ const top=Object.entries(demand).sort((a,b)=>b[1]-a[1]).slice(0,8),mx=top[0][1];
+ $("demand").innerHTML=top.map(([n,v])=>`<div class="bar"><span title="${esc(n)}">${esc(n)}</span><span class="tr"><i style="width:${(100*v/mx).toFixed(1)}%"></i></span><span>${v}</span></div>`).join("");
+ $("incs").innerHTML=incs.map(x=>`<div class="inc"><b>${esc(x.type)} · ${esc(x.stop)}</b><small>${fmt(x.time)}${x.bus?" · "+esc(x.bus):""}${x.sample?" · sample":" · new from app"}</small>${x.note?`<div>${esc(x.note)}</div>`:""}</div>`).join("")}
+
+function tick(){$("clk").textContent=fmt(t);drawBuses();drawNext();drawOps();if(tab==="plan")drawPlan()}
+function full(){drawRoute();tick()}
+
+document.querySelectorAll(".clock [data-s]").forEach(b=>b.onclick=()=>{speed=+b.dataset.s;document.querySelectorAll(".clock [data-s]").forEach(x=>x.classList.toggle("on",x===b))});
+$("peak").onclick=()=>{t=t<960?965:480;full()};
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));["live","plan","rep"].forEach(v=>$("v-"+v).hidden=v!==tab);if(tab==="plan")drawPlan();if(tab==="rep")drawRbus()});
+document.querySelectorAll("#dirseg button").forEach(b=>b.onclick=()=>{dir=+b.dataset.d;document.querySelectorAll("#dirseg button").forEach(x=>x.classList.toggle("on",x===b));full()});
+const pick=e=>{const r=e.target.closest(".stop");if(!r)return;sel[dir]=DIRS[dir][+r.dataset.s][0];bump(sel[dir],1);drawRoute();tick()};
+$("route").addEventListener("click",pick);
+$("mystop").onchange=()=>{sel[dir]=$("mystop").value;bump(sel[dir],1);drawRoute();tick()};
+$("route").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick(e)}});
+["from","to"].forEach(id=>$(id).onchange=()=>{bump($("from").value,1);drawPlan();drawOps()});
+$("swap").onclick=()=>{const a=$("from").value;$("from").value=$("to").value;$("to").value=a;drawPlan()};
+$("itype").onclick=e=>{const b=e.target.closest("button");if(!b)return;itype=TYPES[+b.dataset.i];document.querySelectorAll("#itype button").forEach(x=>x.classList.toggle("on",x===b))};
+$("rsend").onclick=()=>{if(!itype){$("rmsg").innerHTML='<div class="warn">Pick what happened first.</div>';return}
+ incs.unshift({time:t,type:itype,stop:$("rstop").value,bus:$("rbus").value,note:$("rnote").value.trim().slice(0,200)});
+ $("rmsg").innerHTML='<div class="ok-msg">Thanks — your report is now in the control room.</div>';$("rnote").value="";itype=null;
+ document.querySelectorAll("#itype button").forEach(x=>x.classList.remove("on"));drawOps()};
+
+full();
+setInterval(()=>{t+=speed/60;if(t>1320)t=390;tick();if(tab==="rep"&&Math.random()<.05)drawRbus()},1000);
+}
+</script>
+</body>
+</html>
